@@ -24,10 +24,6 @@ jobs:
           sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
           sudo apt-get update && sudo apt-get install -y terraform
 
-      - name: Verify Terraform Files
-        run: |
-          ls -l ./k8s/Terraform
-
       - name: Initialize Terraform
         run: terraform init
         working-directory: ./k8s/Terraform
@@ -44,6 +40,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          cd k8s
           git config --global user.email "denismamoni@hotmail.com"
           git config --global user.name "DenisWm"
           git add .
