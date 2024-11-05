@@ -1,0 +1,48 @@
+name: CI/CD Pipeline - Kubernetes Infra
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  deploy-infra:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Kubernetes repo
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnupg software-properties-common curl
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update && sudo apt-get install -y terraform
+
+      - name: Initialize Terraform
+        run: terraform init
+        working-directory: ./k8s/Terraform
+
+      - name: Apply Terraform
+        run: terraform apply -auto-approve
+        working-directory: ./k8s/Terraform
+
+      - name: Update Kubernetes manifests
+        run: |
+          find ./k8s -name 'deployment.yaml' -exec sed -i 's|image:.*|image: gabiponcet/lanchonete-app:latest|' {} +
+
+      - name: Commit and push changes to Kubernetes repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd k8s
+          git config --global user.email "denismamoni@hotmail.com"
+          git config --global user.name "DenisWm"
+          git add .
+          git commit -m "Update deployment to latest image - $(date +'%Y-%m-%d %H:%M:%S')"
+          git push --force --verbose https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/DenisWm/infra-k8s.git HEAD:master
