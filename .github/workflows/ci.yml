@@ -24,6 +24,10 @@ jobs:
           sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
           sudo apt-get update && sudo apt-get install -y terraform
 
+      - name: Verify Terraform Files
+        run: |
+          ls -l ./k8s/Terraform
+
       - name: Initialize Terraform
         run: terraform init
         working-directory: ./k8s/Terraform
