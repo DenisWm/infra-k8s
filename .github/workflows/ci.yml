@@ -9,21 +9,55 @@ on:
       - master
 
 jobs:
-  update-k8s:
+  deploy-infra:
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out infra-k8s repo
         uses: actions/checkout@v2
 
+      - name: Set up Terraform
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnupg software-properties-common curl
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update && sudo apt-get install -y terraform
+
+      - name: Set up LocalStack CLI
+        run: pip install localstack awscli-local
+
+      - name: Start LocalStack
+        run: localstack start -d
+        env:
+          LAMBDA_EXECUTOR: docker
+
+      - name: Wait for LocalStack to be ready
+        run: |
+          until curl -s http://localhost:4566/health | grep "\"s3\": \"running\""; do
+            echo "Waiting for LocalStack..."
+            sleep 5
+          done
+
+      - name: Configure AWS CLI for LocalStack
+        run: |
+          aws configure set aws_access_key_id test
+          aws configure set aws_secret_access_key test
+          aws configure set region us-east-1
+
+      - name: Initialize Terraform
+        run: terraform init
+        working-directory: ./k8s/Terraform
+
+      - name: Apply Terraform
+        run: terraform apply -auto-approve
+        working-directory: ./k8s/Terraform
+
       - name: Update Kubernetes manifests
-        id: update_manifests
         run: |
           find ./k8s -name 'deployment.yaml' -exec sed -i 's|image:.*|image: gabiponcet/lanchonete-app:latest|' {} +
-          git diff --quiet || echo "Changes detected" > changes_detected.txt
 
       - name: Commit and push changes to infra-k8s repo
-        if: steps.update_manifests.outputs.changes_detected != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
