@@ -9,24 +9,25 @@ on:
       - master
 
 jobs:
-  deploy-infra:
+  update-k8s:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out Kubernetes repo
+      - name: Check out infra-k8s repo
         uses: actions/checkout@v2
 
       - name: Update Kubernetes manifests
         run: |
           find ./k8s -name 'deployment.yaml' -exec sed -i 's|image:.*|image: gabiponcet/lanchonete-app:latest|' {} +
+          git diff --exit-code || echo "Changes detected"
 
-      - name: Commit and push changes to Kubernetes repo
+      - name: Commit and push changes to infra-k8s repo
+        if: success()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cd k8s
-          git config --global user.email "denismamoni@hotmail.com"
-          git config --global user.name "DenisWm"
+          git config --global user.email "gabiponcet@gmail.com"
+          git config --global user.name "gabiponcet"
           git add .
           git commit -m "Update deployment to latest image - $(date +'%Y-%m-%d %H:%M:%S')"
           git push --force --verbose https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/DenisWm/infra-k8s.git HEAD:master
