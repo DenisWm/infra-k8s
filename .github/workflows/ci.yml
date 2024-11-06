@@ -16,26 +16,6 @@ jobs:
       - name: Check out Kubernetes repo
         uses: actions/checkout@v2
 
-      - name: Set up Terraform
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gnupg software-properties-common curl
-          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-          sudo apt-get update && sudo apt-get install -y terraform
-
-      - name: Verify Terraform Files
-        run: |
-          ls -l ./k8s/Terraform
-
-      - name: Initialize Terraform
-        run: terraform init
-        working-directory: ./k8s/Terraform
-
-      - name: Apply Terraform
-        run: terraform apply -auto-approve
-        working-directory: ./k8s/Terraform
-
       - name: Update Kubernetes manifests
         run: |
           find ./k8s -name 'deployment.yaml' -exec sed -i 's|image:.*|image: gabiponcet/lanchonete-app:latest|' {} +
@@ -45,8 +25,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd k8s
-          git config --global user.email "denismamoni@hotmail.com"
-          git config --global user.name "DenisWm"
+          git config --global user.email "gabiponcet@gmail.com"
+          git config --global user.name "gabiponcet"
           git add .
           git commit -m "Update deployment to latest image - $(date +'%Y-%m-%d %H:%M:%S')"
           git push --force --verbose https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/DenisWm/infra-k8s.git HEAD:master
