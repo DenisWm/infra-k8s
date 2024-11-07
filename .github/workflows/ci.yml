@@ -27,10 +27,9 @@ jobs:
       - name: Set up LocalStack CLI
         run: pip install localstack awscli-local
 
-      - name: Start LocalStack
-        run: localstack start -d
-        env:
-          LAMBDA_EXECUTOR: docker
+      - name: Start LocalStack with Docker
+        run: |
+          docker run -d -p 4566:4566 -p 4571:4571 -e LAMBDA_EXECUTOR=docker --name localstack localstack/localstack
 
       - name: Wait for LocalStack to be ready
         run: |
