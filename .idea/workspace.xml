@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
+<<<<<<< HEAD
+    <list default="true" id="0dee3b0b-67ff-48c4-9550-db35ec992fe8" name="Changes" comment="correção pipeline" />
+=======
     <list default="true" id="3c328cf2-a251-49d4-8230-1f63f3c00285" name="Changes" comment="testando pipeline" />
+>>>>>>> 6ec74bc0095ed04ccf0b2629de0d9388d45ce168
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,6 +20,18 @@
         <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
+<<<<<<< HEAD
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="TaskManager">
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="correção pipeline" />
+    <option name="LAST_COMMIT_MESSAGE" value="correção pipeline" />
+=======
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -167,5 +183,6 @@
     <MESSAGE value="correção pipeline" />
     <MESSAGE value="testando pipeline" />
     <option name="LAST_COMMIT_MESSAGE" value="testando pipeline" />
+>>>>>>> 6ec74bc0095ed04ccf0b2629de0d9388d45ce168
   </component>
 </project>
